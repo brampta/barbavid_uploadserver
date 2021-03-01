@@ -21,7 +21,7 @@ function get_content_of_url($url){
 
 function curl_post($url,$data){
 
-    //echo 'i curl url '.$url.' with data '.$data.'<br />';
+    echo 'i curl url '.$url.' with data '.$data.'<br />';
     $ohyeah = curl_init();
     curl_setopt($ohyeah, CURLOPT_FOLLOWLOCATION, 1);
     curl_setopt($ohyeah, CURLOPT_RETURNTRANSFER, 1);
@@ -34,7 +34,7 @@ function curl_post($url,$data){
     curl_setopt($ohyeah, CURLOPT_POSTFIELDS, $data);
 
     $dataz = curl_exec($ohyeah);
-    //echo 'rezu: '.htmlspecialchars($dataz).'<br />';
+    echo 'rezu: '.htmlspecialchars($dataz).'<br />';
     curl_close($ohyeah);
     return $dataz;
 }

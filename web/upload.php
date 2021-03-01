@@ -10,7 +10,7 @@
 <?php
 include('conf.php');
 
-
+//I am not sure the session is useful here... sure it shares top domain but its on a separate server physically so session should not contain anything here... to review...
 ini_set('session.cookie_domain', '.'.$main_domain);
 session_start();
 
@@ -22,6 +22,22 @@ set_time_limit(3600*48);
 
 
 include('curl.php');
+
+
+//check upload_code, if correct note user_id, if not just die or something...
+$user_id=false;
+$check_upload_code_url=$path_to_main_server.'curling/check_upload_code.php';
+$check_upload_code_postdata='&code='.urlencode($_POST['upload_code']);
+$check_upload_code_results=curl_post($check_upload_code_url,$check_upload_code_postdata);
+if(substr($check_upload_code_results,0,3)=='ok:'){
+    $exploded_result=explode(':',$check_upload_code_results);
+    if($exploded_result[1]){
+        $user_id=$exploded_result[1];
+    }
+}
+if(!$user_id){
+    die('invalid upload code');
+}
 
 //===========get language
 if(isset($_GET['language']))
@@ -192,6 +208,8 @@ else
             $uploaded_file_md5=md5_file($target);
             $ufm_firstchar=substr($uploaded_file_md5,0,1);
             $ufm_secondchar=substr($uploaded_file_md5,1,1);
+
+
             //create unique hash to represent this upload
             $arandomhash='';
             $countturns=0;
@@ -201,8 +219,15 @@ else
                 $countturns++;
                 $arandomhash=get_content_of_url($path_to_main_server.'give_free_hash.php');
             }
+
+            //sanitize that hash a bit!!
+            $arandomhash = substr( preg_replace('#[^a-zA-Z0-9_]#', '', $arandomhash), 0, 12);
+
             if($arandomhash=='')
             {die('error, lost connection with main server (1)');}
+
+            //=======this part will be replaced
+            /*
             //place info about this upload in array (title, description, file md5)
             $upload_info['file_md5']=$uploaded_file_md5;
             $upload_info['title']=base64_encode(mb_substr($_POST['title'],0,$maxtitlelen));
@@ -218,10 +243,41 @@ else
                 echo '$saveupload: post URL: '.$path_to_main_server.'add_or_update_element.php, data: &hash='.urlencode($arandomhash).'&data='.urlencode(serialize($upload_info)).'&index_file='.urlencode('uploads_index.dat').'& result: '.$saveupload.'<br />';
                 die('error, lost connection with main server (2)');
             }
+            */
+            //==================
+
+            //must record the upload data in the videos table on the main server,
+            //if success set the new record video_id on $arandomhash variable
+
+            $upload_info['hash']=$arandomhash;
+            $upload_info['file_md5']=$uploaded_file_md5;
+            $upload_info['title']=mb_substr($_POST['title'],0,$maxtitlelen);
+            $upload_info['description']=mb_substr($_POST['description'],0,$maxdesclen);
+            $upload_info['user_id']=$user_id;
+
+            $id = false;
+            $saveupload_url=$path_to_main_server.'add_or_update_element.php';
+            $saveupload_postdata='&data='.urlencode(serialize($upload_info)).'&table_name=videos';
+            $saveupload=curl_post($saveupload_url,$saveupload_postdata);
+            if(substr($saveupload,0,3)=='ok:'){
+                $exploded_result = explode(':',$saveupload);
+                if(isset($exploded_result[1]) && $exploded_result[1]>1){
+                    $id = $exploded_result[1];
+                }
+            }
+            if(!$id){
+                echo '$saveupload: post URL: '.$saveupload_url.', data: '.$saveupload_postdata.' result: '.$saveupload.'<br />';
+                die('error, lost connection with main server (2)');
+            }
+
+            //=========that one goes too! new stats tbd later...
+            /*
 			//create upload_stats entry
 			$upload_stats_info['h'] = 0;
 			$upload_stats_info['l'] = $nowtime;
 			$saveupload=curl_post($path_to_main_server.'add_or_update_element.php','&hash='.urlencode($arandomhash).'&data='.urlencode(serialize($upload_stats_info)).'&index_file='.urlencode('uploads_stats_index.dat').'&');
+            */
+            //==============================
 
             //check if we already have file with this file md5 in videos_library
             $video_exists='';
