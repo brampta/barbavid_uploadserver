@@ -8,7 +8,7 @@
 	
 	
 <?php
-include('conf.php');
+include(dirname(dirname(__FILE__)).'/settings.php');
 
 //I am not sure the session is useful here... sure it shares top domain but its on a separate server physically so session should not contain anything here... to review...
 ini_set('session.cookie_domain', '.'.$main_domain);
@@ -21,12 +21,12 @@ ini_set("max_input_time", 3600*48);
 set_time_limit(3600*48);
 
 
-include('curl.php');
+include(dirname(dirname(__FILE__)).'/include/curl.php');
 
 
 //check upload_code, if correct note user_id, if not just die or something...
 $user_id=false;
-$check_upload_code_url=$path_to_main_server.'curling/check_upload_code.php';
+$check_upload_code_url=$path_to_main_server.'curl/check_upload_code.php';
 $check_upload_code_postdata='&code='.urlencode($_POST['upload_code']);
 $check_upload_code_results=curl_post($check_upload_code_url,$check_upload_code_postdata);
 if(substr($check_upload_code_results,0,3)=='ok:'){
@@ -47,7 +47,7 @@ else if(isset($_COOKIE['language']))
 else
 {$language='en';}
 setcookie("language", $language, time()+(4*365*24*3600),'/','.'.$main_domain);
-if(!@include('language_'.urlencode($language).'.php'))
+if(!@include(dirname(dirname(__FILE__)).'/include/language_'.urlencode($language).'.php'))
 {die('incorrect language');}
 //===========get language
 
@@ -217,7 +217,7 @@ else
             while($arandomhash=='' && $countturns<$maxturns)
             {
                 $countturns++;
-                $arandomhash=get_content_of_url($path_to_main_server.'give_free_hash.php');
+                $arandomhash=get_content_of_url($path_to_main_server.'curl/give_free_hash.php');
             }
 
             //sanitize that hash a bit!!
@@ -256,7 +256,7 @@ else
             $upload_info['user_id']=$user_id;
 
             $id = false;
-            $saveupload_url=$path_to_main_server.'add_or_update_element.php';
+            $saveupload_url=$path_to_main_server.'curl/add_or_update_element.php';
             $saveupload_postdata='&data='.urlencode(serialize($upload_info)).'&table_name=videos';
             $saveupload=curl_post($saveupload_url,$saveupload_postdata);
             if(substr($saveupload,0,3)=='ok:'){
@@ -286,7 +286,7 @@ else
             while($video_exists=='' && $countturns<$maxturns)
             {
                 $countturns++;
-                $video_exists=get_content_of_url($path_to_main_server.'element_exists.php?hash='.urlencode($uploaded_file_md5).'&index_file='.urlencode('videos_index.dat'));
+                $video_exists=get_content_of_url($path_to_main_server.'curl/element_exists.php?hash='.urlencode($uploaded_file_md5).'&index_file='.urlencode('videos_index.dat'));
             }
             if($video_exists!='true' && $video_exists!='false')
             {die('error, lost connection with main server (3)');}
@@ -296,7 +296,7 @@ else
                 echo 'we already have this file, delete upload at '.$target.'<br />';
                 unlink($target);
                 //add this upload to video info
-                $add_upload_to_video=get_content_of_url($path_to_main_server.'add_upload_to_video.php?upload='.urlencode($arandomhash).'&video='.urlencode($uploaded_file_md5));
+                $add_upload_to_video=get_content_of_url($path_to_main_server.'curl/add_upload_to_video.php?upload='.urlencode($arandomhash).'&video='.urlencode($uploaded_file_md5));
             }
             else if($video_exists=='false')
             {
@@ -308,7 +308,7 @@ else
                 $video_info['reso']='?';
                 $video_info['chunks']=array();
                 $video_info['uploads']=array($arandomhash);
-                $savevideo=curl_post($path_to_main_server.'add_or_update_element.php','&hash='.urlencode($uploaded_file_md5).'&data='.urlencode(serialize($video_info)).'&index_file='.urlencode('videos_index.dat').'&');
+                $savevideo=curl_post($path_to_main_server.'curl/add_or_update_element.php','&hash='.urlencode($uploaded_file_md5).'&data='.urlencode(serialize($video_info)).'&index_file='.urlencode('videos_index.dat').'&');
 
                 ////add uploaded file to encoding queue
                 $file_info['filename']=$target_filename;

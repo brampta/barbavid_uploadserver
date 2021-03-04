@@ -1,6 +1,6 @@
 <?php
 
-include('conf.php');
+include(dirname(dirname(dirname(__FILE__))).'/settings.php');
 proc_nice(19);
 
 
@@ -34,7 +34,7 @@ GREP: ' . $grepper . '
 
         if ($thisinstanceisrunning == 0)
         {
-            $command = 'php ' . $working_dir . '/encode.php ' . $maybe_instancenumber;
+            $command = $php_path.' ' . $working_dir . '/web/cron/encode.php ' . $maybe_instancenumber;
             echo $command . '
 ';
 
@@ -99,7 +99,7 @@ function informzz($info)
 ', $info);
 }
 
-include('curl.php');
+include(dirname(dirname(dirname(__FILE__))).'/include/curl.php');
 
 
 ////exec('ps aux | grep meancoderzzz',$shoshit);
@@ -426,7 +426,7 @@ while ($end_ofchunk_biggerthan_end_ofvid == 0 && $countchunks < $maxchunks && $p
     $remember_chunks_array[$countchunks] = $chunk_name;
     $chunk_path = $videos_vault_dir . '/' . $firstchar . '/' . $secondchar . '/' . $file_info['file_md5'] . '/' . $chunk_name;
     $temp_chunk_path = $videos_vault_dir . '/' . $firstchar . '/' . $secondchar . '/' . $file_info['file_md5'] . '/' . $temp_chunk_name;
-    $wanted_size = ($this_chunklen * $M_per_minute) * 1000;
+    //$wanted_size = ($this_chunklen * $M_per_minute) * 1000; this gives an error but $wanted_size does not seem to be needed anymore...
 
     $hoursforstarttime = floor($vidstart / 60);
     $minutesforstarttime = $vidstart % 60;
@@ -739,7 +739,7 @@ if ($missing_chunks == 0)
     while ($sethost != 'ok' && $countturns < $maxturns)
     {
         $countturns++;
-        $sethost_url = $path_to_main_server . 'set_server_on_video.php?server=' . $videohostname . '&video=' . urlencode($file_info['file_md5']) . '&chunks=' . urlencode(serialize($remember_chunks_array)) . '&reso=' . urlencode($newreso) . $set_server_time_setter;
+        $sethost_url = $path_to_main_server . 'curl/set_server_on_video.php?server=' . $videohostname . '&video=' . urlencode($file_info['file_md5']) . '&chunks=' . urlencode(serialize($remember_chunks_array)) . '&reso=' . urlencode($newreso) . $set_server_time_setter;
         $sethost = get_content_of_url($sethost_url);
         informzz($sethost_url . ': ' . htmlspecialchars($sethost));
     }
@@ -805,7 +805,7 @@ if ($sethost == 'ok')
     while ($sethost != 'ok' && $countturns < $maxturns)
     {
         $countturns++;
-        $sethost_url = $path_to_main_server . 'set_server_on_video.php?server=failedencoding_' . $servername . '&video=' . urlencode($file_info['file_md5']);
+        $sethost_url = $path_to_main_server . 'curl/set_server_on_video.php?server=failedencoding_' . $servername . '&video=' . urlencode($file_info['file_md5']);
         $sethost = get_content_of_url($sethost_url);
         informzz(htmlspecialchars($sethost_url . ': ' . $sethost));
     }

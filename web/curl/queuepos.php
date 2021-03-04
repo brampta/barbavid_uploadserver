@@ -1,7 +1,7 @@
 <?php
 
 
-include('allowed_ips.php');
+include(dirname(dirname(dirname(__FILE__))).'/settings.php');
 //echo $_SERVER['REMOTE_ADDR'].'<br />';
 if(array_search($_SERVER['REMOTE_ADDR'],$allowed_ips)===false)
 {die('unauthorized');}
@@ -9,10 +9,11 @@ if(array_search($_SERVER['REMOTE_ADDR'],$allowed_ips)===false)
 //echo '$_GET[\'video\']: '.$_GET['video'].'<br />';
 
 
-$inprocess_files=glob('encodeinprog_*');
+$inprocess_files=glob(dirname(dirname(dirname(__FILE__))).'/encodeinprog_*');
 $in_progress=0;
 foreach($inprocess_files as $key => $value)
 {
+    //var_dump($value);
     $filecontents=file_get_contents($value);
     $exploded_contents=explode(' ',$filecontents);
     if($exploded_contents[0]==$_GET['video'])
@@ -53,13 +54,13 @@ foreach($inprocess_files as $key => $value)
     }
 }
 
+$pos=0;
 if($in_progress==0)
 {
-    $stuff_in_encoding_queue=glob('encoding_queue/*');
+    $stuff_in_encoding_queue=glob(dirname(dirname(dirname(__FILE__))).'/encoding_queue/*');
 
 
     $count=0;
-    $pos=0;
     foreach($stuff_in_encoding_queue as $key => $value)
     {
         //echo '$value: '.$value.'<br />';
@@ -85,7 +86,7 @@ if($in_progress==0)
 
 if($pos==0 && $in_progress==0)
 {
-    $stuff_in_error_encoding_queue=glob('encoding_queue_errors/*');
+    $stuff_in_error_encoding_queue=glob(dirname(dirname(dirname(__FILE__))).'/encoding_queue_errors/*');
     foreach($stuff_in_error_encoding_queue as $key => $value)
     {
         //echo '$value: '.$value.'<br />';

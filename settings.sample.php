@@ -11,6 +11,7 @@ $videohost_ftp_password='';
 
 $ffmpeg_path='/usr/local/bin/ffmpeg';
 $qt_faststart_path='/usr/local/bin/qt-faststart';
+$php_path='/Applications/MAMP/bin/php/php7.4.9/bin/php';
 
 $working_dir = dirname(__FILE__);
 $path_to_main_server = 'https://barba.local/';
