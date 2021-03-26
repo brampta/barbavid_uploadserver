@@ -26,8 +26,9 @@ $minimumspaceinGigs = 30;
 
 
 //======H.264 QUALITY SETTINGS
-//bitrate in K
-$video_b = '450k';
+//bitrate in K (or in M)
+//$video_b = '450k';
+$video_b = '1M';
 $audio_b = '128k';
 
 //The general guideline is to use the slowest preset that you have patience for. Current presets in descending order of speed are: ultrafast,superfast, veryfast, faster, fast, medium, slow, slower, veryslow, placebo.

@@ -26,16 +26,20 @@ include(dirname(dirname(__FILE__)).'/include/curl.php');
 
 //check upload_code, if correct note user_id, if not just die or something...
 $user_id=false;
+$channel_id=false;
 $check_upload_code_url=$path_to_main_server.'curl/check_upload_code.php';
-$check_upload_code_postdata='&code='.urlencode($_POST['upload_code']);
+$check_upload_code_postdata='&code='.urlencode($_POST['upload_code']).'&channel_hash='.urlencode($_POST['channel']);
 $check_upload_code_results=curl_post($check_upload_code_url,$check_upload_code_postdata);
 if(substr($check_upload_code_results,0,3)=='ok:'){
     $exploded_result=explode(':',$check_upload_code_results);
     if($exploded_result[1]){
         $user_id=$exploded_result[1];
     }
+    if($exploded_result[2]){
+        $channel_id=$exploded_result[2];
+    }
 }
-if(!$user_id){
+if(!$user_id || !$channel_id){
     die('invalid upload code');
 }
 
@@ -254,6 +258,7 @@ else
             $upload_info['title']=mb_substr($_POST['title'],0,$maxtitlelen);
             $upload_info['description']=mb_substr($_POST['description'],0,$maxdesclen);
             $upload_info['user_id']=$user_id;
+            $upload_info['channel_id']=$channel_id;
 
             $id = false;
             $saveupload_url=$path_to_main_server.'curl/add_or_update_element.php';
