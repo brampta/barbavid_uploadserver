@@ -5,7 +5,7 @@
 //error_reporting(-1);
 
 
-include(dirname(dirname(dirname(__FILE__))).'/settings.php');
+include(dirname(dirname(__FILE__)).'/settings.php');
 ini_set('session.cookie_domain', '.'.$main_domain);
 session_start();
 
