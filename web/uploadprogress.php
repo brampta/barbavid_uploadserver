@@ -20,7 +20,7 @@ if (isset($_GET['language'])) {
     $language = 'en';
 }
 setcookie("language", $language, time() + (4 * 365 * 24 * 3600), '/', '.'.$main_domain);
-if (!@include(dirname(dirname(dirname(__FILE__))).'/include/language_' . urlencode($language) . '.php')) {
+if (!@include(dirname(dirname(__FILE__)).'/include/language_' . urlencode($language) . '.php')) {
     die('incorrect language');
 }
 
