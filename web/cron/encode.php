@@ -739,7 +739,7 @@ if ($missing_chunks == 0)
     while ($sethost != 'ok' && $countturns < $maxturns)
     {
         $countturns++;
-        $sethost_url = $path_to_main_server . 'curl/set_server_on_video.php?server=' . $videohostname . '&video=' . urlencode($file_info['file_md5']) . '&chunks=' . urlencode(serialize($remember_chunks_array)) . '&reso=' . urlencode($newreso) . $set_server_time_setter;
+        $sethost_url = $path_to_main_server . 'curl/set_server_on_video.php?server=' . $videohostname . '&ready=1&video=' . urlencode($file_info['file_md5']) . '&chunks=' . urlencode(serialize($remember_chunks_array)) . '&reso=' . urlencode($newreso) . $set_server_time_setter;
         $sethost = get_content_of_url($sethost_url);
         informzz($sethost_url . ': ' . htmlspecialchars($sethost));
     }
