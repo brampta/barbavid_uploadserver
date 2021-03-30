@@ -25,24 +25,23 @@ $maxpopURLlen = 1024;
 $minimumspaceinGigs = 30;
 
 
-//======H.264 QUALITY SETTINGS
-//bitrate in K (or in M)
-//$video_b = '450k';
-$video_b = '1M';
-$audio_b = '128k';
+//new encoding params... to replace above.. more flexible..
+$two_passes=false;
+$video_params='-vcodec libx264 -crf 10';
+$audio_params='-ac 2 -acodec aac -ab 128k';
+$ffmpeg_options_1stpass='-threads 0 -f rawvideo';
+$ffmpeg_options_2ndpass='-metadata:s:v:0 rotate=0 -threads 0';
+//if using 2 pass you can replace -crf 10 with something like -b:v 1M or -b:v 4000k,
+//but crf is not compatible with 2 pass, crf has range 0-51 for x264 and 4-63 for vpx, the lower the better, 0 is lossless,
+//crf aims for a specific quality level but size may vary,
+//while using -b:v 4000k enforces a certain max bitrate,
+//which means your file size will be more consistent but quality in some parts of the videos that cannot easily be rendered with that bitrate may suffer..
 
 //The general guideline is to use the slowest preset that you have patience for. Current presets in descending order of speed are: ultrafast,superfast, veryfast, faster, fast, medium, slow, slower, veryslow, placebo.
-
-//$pass1_preset='fast_firstpass';
-//$pass2_preset='medium';
-//$pass1_preset='ultrafast_firstpass';
-//$pass2_preset='ultrafast';
-
 $pass1_preset = 'medium';
 $pass2_preset = 'slower';
 
-//$pass1_preset='veryslow_firstpass';
-//$pass2_preset='veryslow';
+
 //chunks lenght, split videos in chunks of how many minutes
 $chunk_len = 30;
 //allow up to x simultaneous encoding processes to take place

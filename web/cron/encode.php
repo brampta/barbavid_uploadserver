@@ -269,24 +269,27 @@ $reencoded_file_name = $videos_vault_dir . '/' . $firstchar . '/' . $secondchar 
 
 file_put_contents($inprogress_filename, $file_info['file_md5'] . ' pass1 ' . $file_info['time'] . ' ' . $videos_vault_dir . '/' . $firstchar . '/' . $secondchar . '/' . $file_info['file_md5'] . '/pass1_process.txt queuefile:' . $pathofqueuefileinprogfolder);
 
-//encode first pass of orichunk
-//$pass1 = $ffmpeg_path . ' -i ' . escapeshellarg($filetotreat) . ' -an -pass 1 -vcodec libx264 -vpre ' . $pass1_preset . ' -b ' . $video_b . ' -threads 0 -f rawvideo -y /dev/null';
-$pass1 = $ffmpeg_path . ' -i ' . escapeshellarg($filetotreat) . ' -an -pass 1 -vcodec libx264 -preset ' . $pass1_preset . ' -b:v ' . $video_b . ' -threads 0 -f rawvideo -y /dev/null';
-$pass1 = $ffmpeg_path . ' -i ' . escapeshellarg($filetotreat) . ' -an -pass 1 -vcodec libx264 -preset ' . $pass1_preset . ' -b:v ' . $video_b . ' -threads 0 -f rawvideo -y /dev/null';
-$pass1 = $cdtoworkingdir . '; nice -n 19 ' . $pass1 . ' 2> ' . $videos_vault_dir . '/' . $firstchar . '/' . $secondchar . '/' . $file_info['file_md5'] . '/pass1_process.txt 1> /dev/null';
-informzz('-----' . $pass1 . '<br />'); flush();
-$op_starttime = microtime(true);
-//unset($outputz);
-//exec($cdtoworkingdir.'; nice -n 19 '.$pass1.' 2>&1',$outputz);
-//foreach($outputz as $key => $value)
-//{informzz($value.'<br />');}
-//exec($pass1.' 2>&1');
-passthru($pass1);
-$op_endtime = microtime(true);
-$op_time = $op_endtime - $op_starttime;
-informzz('+++operation took ' . $op_time . ' seconds.<br />');
+if($two_passes){
+    //encode first pass of orichunk
+    //$pass1 = $ffmpeg_path . ' -i ' . escapeshellarg($filetotreat) . ' -an -pass 1 -vcodec libx264 -vpre ' . $pass1_preset . ' -b ' . $video_b . ' -threads 0 -f rawvideo -y /dev/null';
+    //$pass1 = $ffmpeg_path . ' -i ' . escapeshellarg($filetotreat) . ' -an -pass 1 -vcodec libx264 -preset ' . $pass1_preset . ' -b:v ' . $video_bitrate_param . ' -threads 0 -f rawvideo -y /dev/null';
+    //$pass1 = $ffmpeg_path . ' -i ' . escapeshellarg($filetotreat) . ' -an -pass 1 -vcodec libx264 -preset ' . $pass1_preset . ' -b:v ' . $video_b . ' -threads 0 -f rawvideo -y /dev/null';
+    $pass1 = $ffmpeg_path . ' -i ' . escapeshellarg($filetotreat) . ' -pass 1 -preset ' . $pass1_preset . ' '.$video_params.' -an '.$ffmpeg_options_1stpass.' -y /dev/null';
+    $pass1 = $cdtoworkingdir . '; nice -n 19 ' . $pass1 . ' 2> ' . $videos_vault_dir . '/' . $firstchar . '/' . $secondchar . '/' . $file_info['file_md5'] . '/pass1_process.txt 1> /dev/null';
+    informzz('-----' . $pass1 . '<br />'); flush();
+    $op_starttime = microtime(true);
+    //unset($outputz);
+    //exec($cdtoworkingdir.'; nice -n 19 '.$pass1.' 2>&1',$outputz);
+    //foreach($outputz as $key => $value)
+    //{informzz($value.'<br />');}
+    //exec($pass1.' 2>&1');
+    passthru($pass1);
+    $op_endtime = microtime(true);
+    $op_time = $op_endtime - $op_starttime;
+    informzz('+++operation took ' . $op_time . ' seconds.<br />');
 
-file_put_contents($inprogress_filename, $file_info['file_md5'] . ' pass2 ' . $file_info['time'] . ' ' . $videos_vault_dir . '/' . $firstchar . '/' . $secondchar . '/' . $file_info['file_md5'] . '/pass2_process.txt queuefile:' . $pathofqueuefileinprogfolder);
+    file_put_contents($inprogress_filename, $file_info['file_md5'] . ' pass2 ' . $file_info['time'] . ' ' . $videos_vault_dir . '/' . $firstchar . '/' . $secondchar . '/' . $file_info['file_md5'] . '/pass2_process.txt queuefile:' . $pathofqueuefileinprogfolder);
+}
 
 //encode second pass of orichunk
 //$pass2 = $ffmpeg_path . ' -i ' . escapeshellarg($filetotreat) . ' -acodec libfaac -ab ' . $audio_b . ' -pass 2 -vcodec libx264 -vpre ' . $pass2_preset . ' -b ' . $video_b . ' -threads 0 -y ' . escapeshellarg($reencoded_file_name);
@@ -298,7 +301,12 @@ file_put_contents($inprogress_filename, $file_info['file_md5'] . ' pass2 ' . $fi
 //added -ac 2 to mix down surround audio to stereo (could help with volume problem of surround audio files)
 //$pass2 = $ffmpeg_path . ' -i ' . escapeshellarg($filetotreat) . ' -ac 2 -acodec libfdk_aac -ab ' . $audio_b . ' -pass 2 -vcodec libx264 -preset ' . $pass2_preset . ' -b:v ' . $video_b . ' -metadata:s:v:0 rotate=0 -threads 0 -y ' . escapeshellarg($reencoded_file_name);
 //changing audio codec from libfdk_aac to native aac for now (read: https://askubuntu.com/questions/544533/how-to-install-avconv-with-libfdk-aac-on-ubuntu-14-04)
-$pass2 = $ffmpeg_path . ' -i ' . escapeshellarg($filetotreat) . ' -ac 2 -acodec aac -ab ' . $audio_b . ' -pass 2 -vcodec libx264 -preset ' . $pass2_preset . ' -b:v ' . $video_b . ' -metadata:s:v:0 rotate=0 -threads 0 -y ' . escapeshellarg($reencoded_file_name);
+//$pass2 = $ffmpeg_path . ' -i ' . escapeshellarg($filetotreat) . ' -ac 2 -acodec aac -ab ' . $audio_b . ' -pass 2 -vcodec libx264 -preset ' . $pass2_preset . ' -b:v ' . $video_b . ' -metadata:s:v:0 rotate=0 -threads 0 -y ' . escapeshellarg($reencoded_file_name);
+$pass_option='';
+if($two_passes){
+    $pass_option='-pass 2';
+}
+$pass2 = $ffmpeg_path . ' -i ' . escapeshellarg($filetotreat) . ' '.$pass_option.' -preset ' . $pass2_preset . ' '.$video_params.'  '.$audio_params.' '.$ffmpeg_options_2ndpass.' -y ' . escapeshellarg($reencoded_file_name);
 //I will now try adding some compression!! did not worked, caused weird crackly shitsound!!!
 //$pass2 = $ffmpeg_path . ' -i ' . escapeshellarg($filetotreat) . ' -ac 2 -acodec libfdk_aac -ab ' . $audio_b . ' -af compand=".3|.3:1|1:-90/-60|-60/-40|-40/-30|-20/-20:6:0:-90:0.2" -pass 2 -vcodec libx264 -preset ' . $pass2_preset . ' -b:v ' . $video_b . ' -metadata:s:v:0 rotate=0 -threads 0 -y ' . escapeshellarg($reencoded_file_name);
 $pass2 = $cdtoworkingdir . '; nice -n 19 ' . $pass2 . ' 2> ' . $videos_vault_dir . '/' . $firstchar . '/' . $secondchar . '/' . $file_info['file_md5'] . '/pass2_process.txt 1> /dev/null';
