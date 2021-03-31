@@ -27,7 +27,7 @@ $minimumspaceinGigs = 30;
 
 //new encoding params... to replace above.. more flexible..
 $two_passes=false;
-$video_params='-vcodec libx264 -crf 10';
+$video_params='-vcodec libx264 -crf 23';
 $audio_params='-ac 2 -acodec aac -ab 128k';
 $ffmpeg_options_1stpass='-threads 0 -f rawvideo';
 $ffmpeg_options_2ndpass='-metadata:s:v:0 rotate=0 -threads 0';
