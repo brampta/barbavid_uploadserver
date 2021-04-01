@@ -29,6 +29,7 @@ foreach($inprocess_files as $key => $value)
             if(!$file){
                 echo 'error, unable to open pass process file '.$exploded_contents[3].' queue file data was:';
                 var_dump($exploded_contents);
+                continue;
             }
             while(!feof($file))
             {
