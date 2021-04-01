@@ -287,9 +287,9 @@ if($two_passes){
     $op_endtime = microtime(true);
     $op_time = $op_endtime - $op_starttime;
     informzz('+++operation took ' . $op_time . ' seconds.<br />');
-
-    file_put_contents($inprogress_filename, $file_info['file_md5'] . ' pass2 ' . $file_info['time'] . ' ' . $videos_vault_dir . '/' . $firstchar . '/' . $secondchar . '/' . $file_info['file_md5'] . '/pass2_process.txt queuefile:' . $pathofqueuefileinprogfolder);
 }
+file_put_contents($inprogress_filename, $file_info['file_md5'] . ' pass2 ' . $file_info['time'] . ' ' . $videos_vault_dir . '/' . $firstchar . '/' . $secondchar . '/' . $file_info['file_md5'] . '/pass2_process.txt queuefile:' . $pathofqueuefileinprogfolder);
+
 
 //encode second pass of orichunk
 //$pass2 = $ffmpeg_path . ' -i ' . escapeshellarg($filetotreat) . ' -acodec libfaac -ab ' . $audio_b . ' -pass 2 -vcodec libx264 -vpre ' . $pass2_preset . ' -b ' . $video_b . ' -threads 0 -y ' . escapeshellarg($reencoded_file_name);
