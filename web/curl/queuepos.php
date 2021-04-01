@@ -3,8 +3,8 @@
 
 include(dirname(dirname(dirname(__FILE__))).'/settings.php');
 //echo $_SERVER['REMOTE_ADDR'].'<br />';
-if(array_search($_SERVER['REMOTE_ADDR'],$allowed_ips)===false)
-{die('unauthorized');}
+//if(array_search($_SERVER['REMOTE_ADDR'],$allowed_ips)===false)
+//{die('unauthorized');}
 
 //echo '$_GET[\'video\']: '.$_GET['video'].'<br />';
 
@@ -26,6 +26,10 @@ foreach($inprocess_files as $key => $value)
             echo ' '.$exploded_contents[2];
             $current_encoding_time=0;
             $file = fopen($exploded_contents[3], "r");
+            if(!$file){
+                echo 'error, unable to open pass process file '.$exploded_contents[3].' queue file data was:';
+                var_dump($exploded_contents);
+            }
             while(!feof($file))
             {
                 $thisline=fgets($file);
