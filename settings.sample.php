@@ -4,12 +4,13 @@ $servername='upload1';
 $videohostname='video1';  //the video host that this upload server should send the file to, that makes sense in a scenario where the uploadserver is always on same server than videohost, but when the uploadserver is on a separate server, it may make more sense to implement a system to judge which videohost to send to
 
 //new parameters to allow upload server on different server than videohost!!
-$videohost_ison_different_server=0; //if this is set to 1, the successfully encoded video will be sent to the videohost via ftp!
+$videohost_ison_different_server=0; //if this is set to 1, the successfully encoded video will be sent to the videohost via ftp! ..lol what?? is this even implemented??
 $videohost_ftp_host='';
 $videohost_ftp_user='';
 $videohost_ftp_password='';
 
 $ffmpeg_path='/usr/local/bin/ffmpeg';
+$ffprobe_path='/usr/local/bin/ffprobe';
 $qt_faststart_path='/usr/local/bin/qt-faststart';
 $php_path='/Applications/MAMP/bin/php/php7.4.9/bin/php';
 
@@ -26,6 +27,12 @@ $minimumspaceinGigs = 30;
 
 
 //new encoding params... to replace above.. more flexible..
+$skip_encoding_when_possible=true;
+$accepted_video_extensions=array('mp4');
+$accepted_video_formats=array('h264');
+$accepted_audio_formats=array('aac');
+$maximum_bytes_per_second=100000;
+
 $two_passes=false;
 $video_params='-vcodec libx264 -crf 23';
 $audio_params='-ac 2 -acodec aac -ab 128k';
