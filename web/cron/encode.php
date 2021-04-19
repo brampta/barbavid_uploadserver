@@ -96,20 +96,22 @@ function informzz($info)
 {
     global $infoforlogfile, $video_dir;
 
+    $file_line_break='
+';
+
     //we first output the info
-    echo $info;
+    echo '<br />'.$info.'<br />';
     //then we add it to the global info text variable
-    $infoforlogfile = $infoforlogfile . str_replace('<br />', '
-', $info);
+    $infoforlogfile = $infoforlogfile . str_replace('<br />', $file_line_break, $info);
 
     //initially this global info variable used to be saved to the logs file only at the end of the script
     //but now as soon as we have created the folder for the video we will start writing in the file
     if(is_dir($video_dir)){
-        echo 'video dir exists, writing to '.$video_dir.'/encodings.log<br>';
-        file_put_contents($video_dir . '/encodings.log', $infoforlogfile, FILE_APPEND);
+        echo '<br>======================video dir exists, writing to '.$video_dir.'/encodings_log.txt<br>';
+        file_put_contents($video_dir . '/encodings_log.txt', $file_line_break.$infoforlogfile.$file_line_break, FILE_APPEND);
         $infoforlogfile='';
     }else{
-        echo 'video dir not existing, continuing to accumulate info...<br>';
+        echo '<br>======================video dir not existing, continuing to accumulate info...<br>';
     }
 }
 
@@ -893,10 +895,11 @@ if ($sethost == 'ok')
     { informzz($value . '<br />'); }
 
     //write down info about encoding in logfile
-    file_put_contents($videos_vault_dir . '/' . $firstchar . '/' . $secondchar . '/' . $file_info['file_md5'] . '/encodings.log', $infoforlogfile, FILE_APPEND);
+    file_put_contents($videos_vault_dir . '/' . $firstchar . '/' . $secondchar . '/' . $file_info['file_md5'] . '/encodings_log.txt', $infoforlogfile, FILE_APPEND);
 } else
 {
     //delete everything in folder (encodings.log is not in there yet, it will be put after)
+    //hum due to a change now it is there.. but fear not I will just make it be .txt now to solve it being Erased!!!
 //    $remove_reencoded='rm '.$videos_vault_dir.'/'.$firstchar.'/'.$secondchar.'/'.$file_info['file_md5'].'/*';
 //    unset($outputz);
 //    exec($remove_reencoded.' 2>&1',$outputz);
