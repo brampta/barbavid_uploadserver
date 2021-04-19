@@ -105,8 +105,11 @@ function informzz($info)
     //initially this global info variable used to be saved to the logs file only at the end of the script
     //but now as soon as we have created the folder for the video we will start writing in the file
     if(is_dir($video_dir)){
+        echo 'video dir exists, writing to '.$video_dir.'/encodings.log<br>';
         file_put_contents($video_dir . '/encodings.log', $infoforlogfile, FILE_APPEND);
         $infoforlogfile='';
+    }else{
+        echo 'video dir not existing, continuing to accumulate info...<br>';
     }
 }
 
@@ -302,7 +305,7 @@ $audio_format_is_valid=false;
 $bytes_per_second_is_low_enough=false;
 
 $file_extention=pathinfo($filetotreat, PATHINFO_EXTENSION);
-var_dump('$file_extention',$file_extention);
+//var_dump('$file_extention',$file_extention);
 if(in_array($file_extention,$accepted_video_extensions)){
     $extension_is_valid=true;
 }
@@ -310,7 +313,7 @@ if(in_array($file_extention,$accepted_video_extensions)){
 $get_video_format_command=$ffprobe_path.' -v error -select_streams v:0 -show_entries stream=codec_name -of default=noprint_wrappers=1:nokey=1 '.escapeshellarg($filetotreat);
 exec($get_video_format_command, $outputs_array1, $retval);
 $video_formats=$outputs_array1;
-var_dump('$video_formats',$video_formats);
+//var_dump('$video_formats',$video_formats);
 foreach($video_formats as $video_format){
     if(in_array($video_format,$accepted_video_formats)){
         $video_format_is_valid=true;
@@ -321,7 +324,7 @@ foreach($video_formats as $video_format){
 $get_audio_format_command=$ffprobe_path.' -v error -select_streams a:0 -show_entries stream=codec_name -of default=noprint_wrappers=1:nokey=1 '.escapeshellarg($filetotreat);
 exec($get_audio_format_command, $outputs_array2, $retval);
 $audio_formats=$outputs_array2;
-var_dump('$audio_formats',$audio_formats);
+//var_dump('$audio_formats',$audio_formats);
 foreach($audio_formats as $audio_format){
     if(in_array($audio_format,$accepted_audio_formats)){
         $audio_format_is_valid=true;
@@ -333,11 +336,11 @@ $ffprobe_json_command=$ffprobe_path.' -show_format -print_format json -v quiet -
 exec($ffprobe_json_command, $outputs_array3, $retval);
 $ffprobe_json=implode('',$outputs_array3);
 $ffprobe_array=json_decode($ffprobe_json);
-var_dump('$ffprobe_array',$ffprobe_array);
+//var_dump('$ffprobe_array',$ffprobe_array);
 $duration=$ffprobe_array->format->duration;
 $size=$ffprobe_array->format->size;
 $average_bytes_per_second=$size/$duration;
-var_dump('$duration',$duration,'$size',$size,'$average_bytes_per_second',$average_bytes_per_second);
+//var_dump('$duration',$duration,'$size',$size,'$average_bytes_per_second',$average_bytes_per_second);
 if($average_bytes_per_second<=$maximum_bytes_per_second){
     $bytes_per_second_is_low_enough=true;
 }
@@ -351,12 +354,13 @@ if($skip_encoding) {
 
     //the file was fitting our standards so we'll skip encoding. this will save time and will keep the file matching the same md5! (so reuploads from barba downloads will be recognized!)
     //but we still gotta at least set the expected name on the uploaded file..
-    informzz('moving file '.$filetotreat.' to '.$reencoded_file_name.'<br />');
-    rename($filetotreat,$reencoded_file_name);
+    informzz('copying file '.$filetotreat.' to '.$reencoded_file_name.'<br />');
+    copy($filetotreat,$reencoded_file_name);
 
     //oh and it uses $filetotreat lower to create the thumbnails from the best available source but here we've renamed that file so that causes an issue
     //lets just say $filetotreat is the rencoded url here to solve this in the case of no encode...
-    $filetotreat=$reencoded_file_name;
+    //$filetotreat=$reencoded_file_name;
+    //that did not work... we need the orig file for thumbs cuz later rencoded gets renamed to chunk where theres just 1 chunk and then it breaks when trying to create thumb from filetotreat..
 
     informzz('we skip encoding<br />');
 
