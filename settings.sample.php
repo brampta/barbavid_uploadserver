@@ -31,7 +31,7 @@ $skip_encoding_when_possible=true;
 $accepted_video_extensions=array('mp4');
 $accepted_video_formats=array('h264');
 $accepted_audio_formats=array('aac');
-$maximum_bytes_per_second=100000;
+$maximum_bytes_per_second=120000;
 
 $two_passes=false;
 $video_params='-vcodec libx264 -crf 23';

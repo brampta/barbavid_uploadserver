@@ -104,7 +104,7 @@ function informzz($info)
 
     //initially this global info variable used to be saved to the logs file only at the end of the script
     //but now as soon as we have created the folder for the video we will start writing in the file
-    if($video_dir){
+    if(is_dir($video_dir)){
         file_put_contents($video_dir . '/encodings.log', $infoforlogfile, FILE_APPEND);
         $infoforlogfile='';
     }
@@ -351,13 +351,18 @@ if($skip_encoding) {
 
     //the file was fitting our standards so we'll skip encoding. this will save time and will keep the file matching the same md5! (so reuploads from barba downloads will be recognized!)
     //but we still gotta at least set the expected name on the uploaded file..
+    informzz('moving file '.$filetotreat.' to '.$reencoded_file_name.'<br />');
     rename($filetotreat,$reencoded_file_name);
 
     //oh and it uses $filetotreat lower to create the thumbnails from the best available source but here we've renamed that file so that causes an issue
     //lets just say $filetotreat is the rencoded url here to solve this in the case of no encode...
     $filetotreat=$reencoded_file_name;
 
+    informzz('we skip encoding<br />');
+
 }else{
+    informzz('encoding yes<br />');
+
     //==========encoding now=========
     if ($two_passes) {
         file_put_contents(

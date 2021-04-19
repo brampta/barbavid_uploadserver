@@ -18,4 +18,3 @@ $text[44]='average';
 $text[45]='KB/s';
 $text[46]='The upload cannot be received because this video server is full, try again later.';
 
-?>

@@ -104,26 +104,40 @@ else
     }
     else
     {
-		echo '$_FILES["file"]: '; print_r($_FILES["file"]); echo '<br />';
-        if($_FILES["file"]["error"]>0)
-        {$error=1; $fileerror=1;}
-        if($_FILES["file"]["size"]>$maxfilesize)
-        {$error=1; $filetoobig=1;}
-        if($error==0)
-        {
-            $filename=$_FILES["file"]["name"];
-            $posoflastdot=strripos($filename,'.');
-            $stuffafter=urlencode(substr($filename,$posoflastdot+1));
+        if($_POST['file_or_url']=='url'){
+            //try to download file at url now!
+            echo 'downloading form '.$_POST['url'].'<br>';
+            $posoflastdot=strripos($_POST['url'],'.');
+            $stuffafter=urlencode(substr($_POST['url'],$posoflastdot+1));
             $target_filename=$nowtime.'_'.$ip.'.'.$stuffafter;
-            $target=$upload_dir.'/'.$target_filename;
-			
-			//debug
-			//echo "moving file from ".$_FILES["file"]["tmp_name"]." to $target<br>";
-			
-            if(!move_uploaded_file($_FILES["file"]["tmp_name"],$target))
-            {echo 'error with move_uploaded_file() from '.$_FILES["file"]["tmp_name"].' to '.$target;}
-            else
-            {$gotfile=1;}
+            $filename='/tmp/'.$target_filename;
+            downloadDistantFile($_POST['url'], $filename);
+        }else {
+            echo '$_FILES["file"]: ';
+            print_r($_FILES["file"]);
+            echo '<br />';
+            if ($_FILES["file"]["error"] > 0) {
+                $error = 1;
+                $fileerror = 1;
+            }
+            //if($_FILES["file"]["size"]>$maxfilesize)
+            //{$error=1; $filetoobig=1;}
+            if ($error == 0) {
+                $filename = $_FILES["file"]["name"];
+                $posoflastdot = strripos($filename, '.');
+                $stuffafter = urlencode(substr($filename, $posoflastdot + 1));
+                $target_filename = $nowtime . '_' . $ip . '.' . $stuffafter;
+                $target = $upload_dir . '/' . $target_filename;
+
+                //debug
+                //echo "moving file from ".$_FILES["file"]["tmp_name"]." to $target<br>";
+
+                if (!move_uploaded_file($_FILES["file"]["tmp_name"], $target)) {
+                    echo 'error with move_uploaded_file() from ' . $_FILES["file"]["tmp_name"] . ' to ' . $target;
+                } else {
+                    $gotfile = 1;
+                }
+            }
         }
     }
 

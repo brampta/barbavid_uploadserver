@@ -1,4 +1,5 @@
 <?php
+
 function make_text1($maxfilesize,$yourfilesize)
 {return 'Le fichier est trop gros. Grosseur maximale accpetée: '.$maxfilesize.'MB, Grosseur de votre fichier: '.$yourfilesize.'MB.';}
 
@@ -17,5 +18,3 @@ $text[43]='estimation du temps restant';
 $text[44]='moyenne';
 $text[45]='Ko/s';
 $text[46]='Le vidéo ne peut pas être reçu parceque le serveur vidéo est plein, réessayez plus tard.';
-
-?>
