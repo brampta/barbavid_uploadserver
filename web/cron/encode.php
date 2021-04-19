@@ -302,6 +302,7 @@ $extension_is_valid=false;
 $video_format_is_valid=false;
 $audio_format_is_valid=false;
 $bytes_per_second_is_low_enough=false;
+$atom_position=false; //(false = no atom we'll have to encode, other wise it can be 'start' or 'end', this will be used later to decide if we need to run qs-faststart or not)
 
 $file_extention=pathinfo($filetotreat, PATHINFO_EXTENSION);
 //var_dump('$file_extention',$file_extention);
@@ -343,6 +344,30 @@ $average_bytes_per_second=$size/$duration;
 if($average_bytes_per_second<=$maximum_bytes_per_second){
     $bytes_per_second_is_low_enough=true;
 }
+
+
+$ffprobe_checkatom_command="ffprobe -v trace -i ".escapeshellarg($filetotreat)." 2>&1 | grep -e type:\'mdat\' -e type:\'moov\'";
+//output be like:
+//[mov,mp4,m4a,3gp,3g2,mj2 @ 0x563729532e40] type:'moov' parent:'root' sz: 5090130 40 235595370
+//[mov,mp4,m4a,3gp,3g2,mj2 @ 0x563729532e40] type:'mdat' parent:'root' sz: 230505200 5090178 235595370
+//in that example the moov is at the beginning because its first in the output..
+
+exec($ffprobe_checkatom_command, $outputs_array4, $retval);
+$check_atom_pos_lines=$outputs_array4;
+$count_lines=0;
+foreach($check_atom_pos_lines as $check_atom_pos_line){
+    $count_lines++;
+    if($count_lines==1 && stripos($check_atom_pos_line,'moov')){
+        $atom_position='start';
+        break;
+    }
+    if($count_lines==count($check_atom_pos_lines) && stripos($check_atom_pos_line,'moov')){
+        $atom_position='end';
+        break;
+    }
+}
+
+
 
 if($extension_is_valid && $video_format_is_valid && $audio_format_is_valid && $bytes_per_second_is_low_enough){
     $skip_encoding=true;
@@ -759,6 +784,8 @@ while ($end_ofchunk_biggerthan_end_ofvid == 0 && $countchunks < $maxchunks && $p
 
 
 
+
+
 //    $pct_value_of_completion=(100/$howmany_chunks)*0.01;
 //    $completion_prct=$completion_prct+$pct_value_of_completion;
 //    file_put_contents($working_dir.'/encodeinprog_'.$instance_number,$file_info['file_md5'].' '.$completion_prct);
@@ -810,22 +837,50 @@ while ($end_ofchunk_biggerthan_end_ofvid == 0 && $countchunks < $maxchunks && $p
 //    file_put_contents($working_dir.'/encodeinprog_'.$instance_number,$file_info['file_md5'].' '.$completion_prct);
     //move moov atom and drop tempchunk
     //$moveatom = '/usr/local/bin/qt-faststart ' . escapeshellarg($temp_chunk_path) . ' ' . escapeshellarg($chunk_path);
-    $moveatom = $qt_faststart_path.' ' . escapeshellarg($temp_chunk_path) . ' ' . escapeshellarg($chunk_path);
-    informzz(htmlspecialchars('-----' . $moveatom) . '<br />'); flush();
-    $op_starttime = microtime(true);
-    unset($outputz);
-    exec($cdtoworkingdir . '; nice -n 19 ' . $moveatom . ' 2>&1', $outputz);
-    foreach ($outputz as $key => $value)
-    { informzz($value . '<br />'); }
-    $op_endtime = microtime(true);
-    $op_time = $op_endtime - $op_starttime;
-    informzz('+++operation took ' . $op_time . ' seconds.<br />');
+
+
+
+
+
+    //here we move the atom at the beginning of the file but this causes an error with a non-encoded file that does not have atom at the end of any reason
+    //we will need to run only if atom is at the end
+    //if atom is at the beginning already we must skip (and maybe just cp the file so the rest works)
+    //however if for any reason there was no mov, then I guess its a problem and we should detect that earlier when we decide if we encode or not so that if there is no atom we solve this by encoding...
+    //so the check for if atom is at the beginning, the end, or simply not there, will have to be done earlier at the same time where it checks the other things to decide if file can skip encoding or not..
+
+    if($atom_position=='start'){
+        //so the atom is already at the beginning.. lets just copy the file then...
+        copy($temp_chunk_path,$chunk_path);
+        informzz('moov atom already at the start, skipping qt-faststart command but copied '.$temp_chunk_path.' to '.$chunk_path);
+    }else{
+        $moveatom = $qt_faststart_path.' ' . escapeshellarg($temp_chunk_path) . ' ' . escapeshellarg($chunk_path);
+        informzz(htmlspecialchars('-----' . $moveatom) . '<br />'); flush(); //I think we can remove all these flushes.. I realize now they were probably never useful..
+        $op_starttime = microtime(true);
+        unset($outputz);
+        exec($cdtoworkingdir . '; nice -n 19 ' . $moveatom . ' 2>&1', $outputz);
+        foreach ($outputz as $key => $value)
+        { informzz($value . '<br />'); }
+        $op_endtime = microtime(true);
+        $op_time = $op_endtime - $op_starttime;
+        informzz('+++operation took ' . $op_time . ' seconds.<br />');
+    }
+
+
+
+
+
     $droptempchunk = 'rm ' . escapeshellarg($temp_chunk_path);
     informzz(htmlspecialchars($droptempchunk) . '<br />'); flush();
     unset($outputz);
     exec($cdtoworkingdir . '; nice -n 19 ' . $droptempchunk . ' 2>&1', $outputz);
     foreach ($outputz as $key => $value)
     { informzz($value . '<br />'); }
+
+
+
+
+
+
 //    $pct_value_of_completion=(100/$howmany_chunks)*0.01;
 //    $completion_prct=$completion_prct+$pct_value_of_completion;
 //    file_put_contents($working_dir.'/encodeinprog_'.$instance_number,$file_info['file_md5'].' '.$completion_prct);
@@ -847,6 +902,15 @@ while ($end_ofchunk_biggerthan_end_ofvid == 0 && $countchunks < $maxchunks && $p
 //    exec($cdtoworkingdir.'; nice -n 19 '.$remove_passlogfile.' 2>&1',$outputz);
 //    foreach($outputz as $key => $value)
 //    {informzz($value.'<br />');}
+
+
+
+
+
+
+
+
+
     //verify if vidx chunk was created
     if (file_exists($chunk_path))
     { chmod($chunk_path, 0777); } else
