@@ -1,7 +1,9 @@
 <?php
 
-function make_text1($maxfilesize,$yourfilesize)
-{return 'Le fichier est trop gros. Grosseur maximale accpetée: '.$maxfilesize.'MB, Grosseur de votre fichier: '.$yourfilesize.'MB.';}
+function make_text1($maxfilesize,$yourfilesize) {
+    $string = 'Le fichier est trop gros. Grosseur maximale accpetée: '.$maxfilesize.'MB, Grosseur de votre fichier: '.$yourfilesize.'MB.';
+    return $string;
+}
 
 $text[2]='Erreur lors de la mise en ligne du vidéo: ';
 $text[3]='La mise en ligne du vidéo a réussi mais ffmpeg n\'a pas été capable de comprendre le fichier vidéo que vous avez envoyé. ffmpeg est capable de comprendre les formats suivants:';
@@ -18,3 +20,9 @@ $text[43]='estimation du temps restant';
 $text[44]='moyenne';
 $text[45]='Ko/s';
 $text[46]='Le vidéo ne peut pas être reçu parceque le serveur vidéo est plein, réessayez plus tard.';
+
+
+$text[51]='en attente du début du transfert.';
+$text[52]='téléchargement du fichier';
+$text[53]='fichier téléchargé, enregistrement sur le disque';
+$text[54]='erreur pendant la création du contenu';
