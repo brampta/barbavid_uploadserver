@@ -685,11 +685,16 @@ while ($end_ofchunk_biggerthan_end_ofvid == 0 && $countchunks < $maxchunks && $p
 //    $op_endtime=microtime(true);
 //    $op_time=$op_endtime-$op_starttime;
 //    informzz('+++operation took '.$op_time.' seconds.<br />');
+
+    //will change this bit to create an array of images instead of just 1... hum cool idea but later...
+
     //create fullsize screenshot from original!
-    if ($vidlen == 1)
+    if ($vidlen == 1) //$vidlen is the number of seconds in the video chunk so I dont understand how it can be 1 very often...
     { $thumbpos = ($vidstart * 60) + 10; } else
     { $thumbpos = ($vidstart * 60) + ($vidlen * 60) / 2; }
-    $temp_thumb_name = $videos_vault_dir . '/' . $firstchar . '/' . $secondchar . '/' . $file_info['file_md5'] . '/' . $chunk_basename . '_temp.jpg';
+    //from now on temp thumb will be renamed orig thumb and will not be deleted anymore! it will serve as a master to create different size thumbs as needed later
+    //$temp_thumb_name = $videos_vault_dir . '/' . $firstchar . '/' . $secondchar . '/' . $file_info['file_md5'] . '/' . $chunk_basename . '_temp.jpg';
+    $temp_thumb_name = $videos_vault_dir . '/' . $firstchar . '/' . $secondchar . '/' . $file_info['file_md5'] . '/' . $chunk_basename . '_orig.jpg';
     $thumb = $ffmpeg_path . ' -v 0 -ss ' . $thumbpos . ' -i ' . escapeshellarg($filetotreat) . ' -f image2 -vframes 1 -y ' . escapeshellarg($temp_thumb_name);
     informzz(htmlspecialchars('-----' . $thumb) . '<br />'); flush();
     $op_starttime = microtime(true);
@@ -716,6 +721,7 @@ while ($end_ofchunk_biggerthan_end_ofvid == 0 && $countchunks < $maxchunks && $p
     $largewidth = 960; //1920/3=960
     $largeheight = 540; //1080/3=540
 
+    /* we will not even make any thumbs anymore during encoding! the thumbalizer will make what it needs from the original...
     //make thumb
     $width_pourun = $size[0] / $thumbwidth;
     $height_pourun = $size[1] / $thumbheight;
@@ -771,16 +777,17 @@ while ($end_ofchunk_biggerthan_end_ofvid == 0 && $countchunks < $maxchunks && $p
     //imagejpeg($img,$thumb_name);
     imagepng($img, $thumb_name);
     imagedestroy($img);
-
+    */
 
     //drop temp thumb
+    /* we do not delete this temp (now orign) image anymore!
     $remove_tempthumb = 'rm ' . escapeshellarg($temp_thumb_name);
     informzz(htmlspecialchars($remove_tempthumb) . '<br />'); flush();
     unset($outputz);
     exec($cdtoworkingdir . '; nice -n 19 ' . $remove_tempthumb . ' 2>&1', $outputz);
     foreach ($outputz as $key => $value)
     { informzz($value . '<br />'); }
-
+    */
 
 
 
