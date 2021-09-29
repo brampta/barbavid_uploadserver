@@ -9,6 +9,7 @@ function get_content_of_url($url){
     curl_setopt($ohyeah, CURLOPT_TIMEOUT, 30);
     curl_setopt($ohyeah, CURLOPT_URL, $url);
     curl_setopt($ohyeah, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ohyeah, CURLOPT_SSL_VERIFYHOST, false);
     curl_setopt($ohyeah, CURLOPT_USERAGENT, "Curl Barbavid");
     
     $dataz = curl_exec($ohyeah);
@@ -28,12 +29,16 @@ function curl_post($url,$data){
     curl_setopt($ohyeah, CURLOPT_TIMEOUT, 30);
     curl_setopt($ohyeah, CURLOPT_URL, $url);
     curl_setopt($ohyeah, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ohyeah, CURLOPT_SSL_VERIFYHOST, false);
     curl_setopt($ohyeah, CURLOPT_USERAGENT, "Curl Barbavid");
 
     curl_setopt($ohyeah, CURLOPT_POST, TRUE);
     curl_setopt($ohyeah, CURLOPT_POSTFIELDS, $data);
 
     $dataz = curl_exec($ohyeah);
+    if (!$dataz) {
+        throw new Exception(curl_error($ohyeah), curl_errno($ohyeah));
+    }
     echo 'rezu: '.htmlspecialchars($dataz).'<br />';
     curl_close($ohyeah);
     return $dataz;

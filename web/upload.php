@@ -93,11 +93,11 @@ echo '$minimumspaceinGigs: '.$minimumspaceinGigs.'<br />';
 if($freespaceinG<$minimumspaceinGigs)
 {
     $nospace=1;
-    echo 'no space'
+    echo 'no space<br>'
 ;}
 else
 {
-    echo 'has space';
+    echo 'has space<br>';
     if(isset($argv[1]))
     {
         //this option is outdated and not supported anymore, it doesnt have the support for channel and user id, cant use for the moment..
@@ -166,9 +166,16 @@ else
 
             //launch a background terminal process (with the file name from step 1 as argument)
             $command = $php_path.' ' . $working_dir . '/web/cron/download_from_url.php ' . $file_upload_id;
-            echo $command . '<br>';
+            echo 'executing: ' . $command . '<br>';
+            //that is the initial way of calling the command, still in use at the moment..
             exec("$command > /dev/null &", $arrOutput);
-
+            //calling the command like this allowed to see the output of the command in the admin iframe
+            //but it broke the ajax download % meter, so going back to initial way for now
+            /*exec("$command 2>&1", $output, $return_var);
+            foreach($output as $outputline){
+                echo $outputline.'<br>';
+            }*/
+            
             $bg_upload_started=1;
 
         }else {

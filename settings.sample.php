@@ -9,15 +9,15 @@ $videohost_ftp_host='';
 $videohost_ftp_user='';
 $videohost_ftp_password='';
 
-$ffmpeg_path='/usr/local/bin/ffmpeg';
-$ffprobe_path='/usr/local/bin/ffprobe';
-$qt_faststart_path='/usr/local/bin/qt-faststart';
-$php_path='/Applications/MAMP/bin/php/php7.4.9/bin/php';
+$ffmpeg_path='/usr/local/bin/ffmpeg'; ///usr/bin/ffmpeg
+$ffprobe_path='/usr/local/bin/ffprobe'; ///usr/bin/ffprobe
+$qt_faststart_path='/usr/local/bin/qt-faststart'; ///usr/bin/qt-faststart
+$php_path='/Applications/MAMP/bin/php/php7.4.9/bin/php'; ///usr/bin/php7.4
 
 $working_dir = dirname(__FILE__);
 $path_to_main_server = 'https://barba.local/';
-$upload_dir = dirname(dirname(__FILE__)).'/uploads';
-$videos_vault_dir = dirname(dirname(dirname(__FILE__))).'/videohost1/videos';  //should be path to real videovault of videohost if on same server than videohost, but just a temp folder if on a separate server
+$upload_dir = dirname(__FILE__).'/uploads';
+$videos_vault_dir = dirname(dirname(__FILE__)).'/videohost1/videos';  //should be path to real videovault of videohost if on same server than videohost, but just a temp folder if on a separate server
 
 $maxfilesize = 5 * 1024 * 1024 * 1024;
 $maxtitlelen = 100;
