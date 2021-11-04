@@ -161,6 +161,7 @@ else
                 'description'=>$_POST['description'],
                 'channel_id'=>$channel_id,
                 'user_id'=>$user_id,
+                'language'=>$language,
             );
             file_put_contents($infopass_filename,serialize($infopass_data));
 

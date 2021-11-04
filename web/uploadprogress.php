@@ -74,12 +74,16 @@ if (isset($_GET['jsonp'])) {
                 //var_dump($upload_progress_info);
 
                 if($upload_progress_info->status=='downloading'){
-                    $percent_downloaded = ($upload_progress_info->downloading_info->downloaded*100)/$upload_progress_info->downloading_info->download_size;
+                    if(!isset($upload_progress_info->downloading_info->download_size) || $upload_progress_info->downloading_info->download_size<=0){
+                        $percent_downloaded = 0;
+                    }else{
+                        $percent_downloaded = ($upload_progress_info->downloading_info->downloaded*100)/$upload_progress_info->downloading_info->download_size;
+                    }
                     $percent_downloaded = number_format((float)$percent_downloaded, 2, '.', '');
                     $shorezu = $text[52].' ('.$percent_downloaded.'%)';
                 }else if($upload_progress_info->status=='downloaded'){
                     $shorezu = $text[53];
-                }else if($upload_progress_info->status=='error'){
+                }else if($upload_progress_info->status=='error'){//die(var_dump($upload_progress_info));
                     $shorezu = $upload_progress_info->error_info->message;
                     $stopUpload = true;
                 }else if($upload_progress_info->status=='success'){

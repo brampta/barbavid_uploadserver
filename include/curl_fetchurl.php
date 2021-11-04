@@ -35,7 +35,7 @@ function downloadDistantFileProgress($resource,$download_size, $downloaded, $upl
     global $upload_dir;
 
     $upload_progress_info_file = $upload_dir . '/urlupload_progress_'.$file_upload_id.'.txt';
-    echo $download_size.' '.$downloaded.' '.$upload_size.' '.$upload_size.'
+    echo $download_size.' '.$downloaded.' '.$upload_size.' '.$upload_size.'<br>
 ';
     //$upload_progress_data = ($downloaded * 100) / $download_size;
     $upload_progress_data = json_encode(array(
